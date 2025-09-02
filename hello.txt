@@ -1,0 +1,2 @@
+Hallo, dit is voor het eerst dat ik iets schrijf in VIM
+
