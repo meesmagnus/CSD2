@@ -1,2 +1,1 @@
-
-My first repository. Don't really know what i'm doing yet, but slowly it's starting to make sense
+This is the remote repository of Mees Magnus van den Berg, where he will submit the assignments for CSD, or Creative System Design
