@@ -4,9 +4,12 @@ import random
 #4 sounds are used: Kick, snare, hihat and silence. This can be expanded upon.
 soundAmount = 4
 pLookup=[]
-seq=[]
+seqV1=[]
+seqV2=[]
+seqV3=[]
 som=[]
-stepAmtTillReset = int(input("Step Amount till reset?:"))
+measureSize = int(input("Size of measure in steps:"))
+stepSizeSec = 60/float(input("BPM:"))
 
 #First I generate a 3 dimensional lookup table to lookup probability values
 #This will be random each time the code is executed.
@@ -31,23 +34,35 @@ for i in range(soundAmount):
 #to start the Markov Chain, you need previous values,
 #but because these are not yet available at the beginning, I start with a kick at index 0
 #at index 1, I execute the Markov Chain, but because I cannot look two steps back in time (index -1),
-#I use a temporary variable “ignition” instead of index -1.
+#I use a temporary variable “ignition” instead of index -1, (to refer to a similarity in a car engine)
 #Ignition is a random integer.
 
 ignition = random.randint(0, soundAmount - 1)
-seq.insert(0, 0)
-seq.insert(1, random.choices(population = range(soundAmount),weights = pLookup[ignition][seq[0]])[0])
+seqV1.insert(0, 0)
+seqV1.insert(1, random.choices(population = range(soundAmount),weights = pLookup[ignition][seqV1[0]])[0])
 
 #Now that the sequence has a basis from which the Markov Chain can be executed,
 #I do this in a loop that starts at i = 2, because the first 2 values are already fixed.
 #I always check whether i is divisible by stepAmtTillReset, because this means the start of a new measure.
 #If so, I insert a kick (that's how you feel the one). If not, I execute the Markov Chain.
 
-for i in range(2, 8 * stepAmtTillReset):
-    if i%stepAmtTillReset == 0:
-        seq.insert(i, 0)
+for i in range(2, 8 * measureSize):
+    if i % measureSize == 0:
+        seqV1.insert(i, 0)
     else:
-        seq.insert(i, random.choices(population = range(soundAmount), weights = pLookup[seq[i-2]][seq[i-1]])[0])
+        seqV1.insert(i, random.choices(population = range(soundAmount), weights = pLookup[seqV1[i-2]][seqV1[i-1]])[0])
+
+#add timestamps
+for i in range(len(seqV1)):
+    seqV2.append([i*stepSizeSec, seqV1[i]])
+
+#make seperate timestamp lists for each sound
+for i in range(soundAmount):
+    seqV3.append([])
+for i in range(len(seqV2)):
+    seqV3[seqV2[i][1]].append(seqV2[i][0])
 
 
-print(seq)
+
+# print(seqV2)
+print(seqV3)
