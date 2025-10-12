@@ -1,15 +1,25 @@
 #2nd order Markov chain
 
 import random
-#4 sounds are used: Kick, snare, hihat and silence. This can be expanded upon.
-soundAmount = 4
+import time
+import pygame
+
+#4 sounds are used: Silence, kick, snare and hihat. This can be expanded upon.
+
+dna = input("\nPlease provide the sequence DNA: \namount of sounds used, amount of steps in measure, random seed: \n(no comma's or brackets. Use spaces) \n").split()
+soundAmount = int(dna[0])
+measureSize = int(dna[1])
+random.seed(dna[2])
+BPM = float(input("BPM: "))
+stepSizeSec = (60/BPM)/float(input("speed multiplier: "))
 pLookup=[]
 seqV1=[]
 seqV2=[]
 seqV3=[]
 som=[]
-measureSize = int(input("Size of measure in steps:"))
-stepSizeSec = 60/float(input("BPM:"))
+
+
+
 
 #First I generate a 3 dimensional lookup table to lookup probability values
 #This will be random each time the code is executed.
@@ -38,7 +48,7 @@ for i in range(soundAmount):
 #Ignition is a random integer.
 
 ignition = random.randint(0, soundAmount - 1)
-seqV1.insert(0, 0)
+seqV1.insert(0, 1)
 seqV1.insert(1, random.choices(population = range(soundAmount),weights = pLookup[ignition][seqV1[0]])[0])
 
 #Now that the sequence has a basis from which the Markov Chain can be executed,
@@ -49,7 +59,7 @@ seqV1.insert(1, random.choices(population = range(soundAmount),weights = pLookup
 def markovChain(seq, pLookup, measureSize):
     for i in range(2, 8 * measureSize):
         if i % measureSize == 0:
-            seq.insert(i, 0)
+            seq.insert(i, 1)
         else:
             seq.insert(i, random.choices(population = range(soundAmount), weights = pLookup[seq[i-2]][seq[i-1]])[0])
 
@@ -60,18 +70,49 @@ def timestamps(seqIn, seqOut, stepSizeSec):
     for i in range(len(seqIn)):
         seqOut.append([i*stepSizeSec, seqIn[i]])
 
-#make seperate timestamp lists for each sound
+#make seperate timestamp lists for each sound (not used, because redundant)
 def separateSounds(seqIn, seqOut, soundAmount):
     for i in range(soundAmount):
-        seqV3.append([])
-    for i in range(len(seqV2)):
-        seqV3[seqV2[i][1]].append(seqV2[i][0])
+        seqOut.append([])
+    for i in range(len(seqIn)):
+        seqOut[seqIn[i][1]].append(seqIn[i][0])
 
-def makeEvents(seqIn, seqOut, )
+#make events using dictionary
+def makeEvents(seqIn, seqOut):
+    for i in range(len(seqIn)):
+            event = {
+                "sound": seqIn[i][1],
+                "timestamp": seqIn[i][0]
+            }
+            seqOut.append(event)
+
+
+def playSeq(seq, soundAmount):
+    pygame.init()
+    samples = []
+    #make array of playable sounds
+    for i in range(soundAmount):
+        samples.append(pygame.mixer.Sound('sounds/{}.wav'.format(i)))
+
+    startTime = time.time()
+    #go through the sequence and play!
+    for event in seq:
+        while time.time() - startTime < event['timestamp']:
+            time.sleep(0.001)
+        pygame.mixer.stop()
+        samples[event['sound']].play()
+
+    time.sleep(1) #let the last note ring out
+    playAgain = input('play again? (y/n)')
+    if playAgain == 'y':
+        playSeq(seq, soundAmount)
+
+
+
+
 
 markovChain(seqV1, pLookup, measureSize)
 timestamps(seqV1, seqV2, stepSizeSec)
-separateSounds(seqV2, seqV3, soundAmount)
-
-# print(seqV2)
-print(seqV3)
+makeEvents(seqV2, seqV3)
+print(seqV1)
+playSeq(seqV3, soundAmount)
