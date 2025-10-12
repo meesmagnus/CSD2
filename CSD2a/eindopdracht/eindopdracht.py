@@ -46,23 +46,32 @@ seqV1.insert(1, random.choices(population = range(soundAmount),weights = pLookup
 #I always check whether i is divisible by stepAmtTillReset, because this means the start of a new measure.
 #If so, I insert a kick (that's how you feel the one). If not, I execute the Markov Chain.
 
-for i in range(2, 8 * measureSize):
-    if i % measureSize == 0:
-        seqV1.insert(i, 0)
-    else:
-        seqV1.insert(i, random.choices(population = range(soundAmount), weights = pLookup[seqV1[i-2]][seqV1[i-1]])[0])
+def markovChain(seq, pLookup, measureSize):
+    for i in range(2, 8 * measureSize):
+        if i % measureSize == 0:
+            seq.insert(i, 0)
+        else:
+            seq.insert(i, random.choices(population = range(soundAmount), weights = pLookup[seq[i-2]][seq[i-1]])[0])
+
+
 
 #add timestamps
-for i in range(len(seqV1)):
-    seqV2.append([i*stepSizeSec, seqV1[i]])
+def timestamps(seqIn, seqOut, stepSizeSec):
+    for i in range(len(seqIn)):
+        seqOut.append([i*stepSizeSec, seqIn[i]])
 
 #make seperate timestamp lists for each sound
-for i in range(soundAmount):
-    seqV3.append([])
-for i in range(len(seqV2)):
-    seqV3[seqV2[i][1]].append(seqV2[i][0])
+def separateSounds(seqIn, seqOut, soundAmount):
+    for i in range(soundAmount):
+        seqV3.append([])
+    for i in range(len(seqV2)):
+        seqV3[seqV2[i][1]].append(seqV2[i][0])
 
+def makeEvents(seqIn, seqOut, )
 
+markovChain(seqV1, pLookup, measureSize)
+timestamps(seqV1, seqV2, stepSizeSec)
+separateSounds(seqV2, seqV3, soundAmount)
 
 # print(seqV2)
 print(seqV3)
