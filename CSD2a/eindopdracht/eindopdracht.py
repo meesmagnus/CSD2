@@ -3,18 +3,20 @@
 import random
 import time
 import pygame
-import inputValidation as iv
+from inputValidation import inputValidation
 
 '''DNA'''
 #4 sounds are used: Silence, kick, snare and hihat. This can be expanded upon.
-dna = iv.inputValidation("\nPlease provide the sequence DNA: \namount of sounds used, amount of steps in measure, random seed \n(no comma's or brackets. -> Use spaces) \n", "DNA")
+dna = inputValidation("\nPlease provide the sequence DNA: \namount of sounds, measures, steps in a measure and a random seed \n(no comma's or brackets. -> Use spaces) \n", "DNA")
 soundAmount = dna[0]
-measureSize = dna[1]
-random.seed(dna[2])
+measureAmount = dna[1]
+measureSize = dna[2]
+random.seed(dna[3])
 
 '''Playback'''
-BPM = iv.inputValidation("BPM: ", "float", [1, 9999999])
-stepSizeSec = (60/BPM)/iv.inputValidation("speed multiplier: ", "float", [1, 9999999])
+repeatAmount = inputValidation("repeat amount: ", "integer", [1, 9999999])
+BPM = inputValidation("BPM: ", "float", [1, 9999999])
+stepSizeSec = (60.0/BPM)/inputValidation("speed multiplier: ", "float", [1, 9999999])
 
 
 
@@ -50,7 +52,7 @@ def generateLookupTable(soundAmount):
 #Ignition is a random integer.
 
 
-def markovChain(pLookup, measureSize):
+def markovChain(pLookup, measureSize, measureAmount):
     seq = []
     ignition = random.randint(0, soundAmount - 1)
     seq.insert(0, 1)
@@ -60,7 +62,7 @@ def markovChain(pLookup, measureSize):
     #I always check whether i is divisible by stepAmtTillReset, because this means the start of a new measure.
     #If so, I insert a kick (that's how you feel the one). If not, I execute the Markov Chain.
 
-    for i in range(2, 8 * measureSize):
+    for i in range(2, measureAmount * measureSize):
         if i % measureSize == 0:
             seq.insert(i, 1)
         else:
@@ -109,13 +111,10 @@ def playSeq(seq, soundAmount):
 
 #the flow
 pLookup = generateLookupTable(soundAmount)
-
-serialSeq = markovChain(pLookup, measureSize)
-
-doubleSerialSeq = serialSeq + serialSeq
-
-timestampedSeq = getTimestamps(doubleSerialSeq, stepSizeSec)
-
+serialSeq = markovChain(pLookup, measureSize, measureAmount)
+repeatSerialSeq = serialSeq * repeatAmount
+timestampedSeq = getTimestamps(repeatSerialSeq, stepSizeSec)
 eventsSeq = makeEvents(timestampedSeq)
+print("Playing")
 print(serialSeq) #print simple representation of the sequence
 playSeq(eventsSeq, soundAmount)
