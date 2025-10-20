@@ -9,6 +9,20 @@ Om de sequence te beginnen, moet ik eerst de sequence kickstarten (haha) met 2 w
 Nu de eerste 2 events vast staan in de sequence kan de loop worden gestart waar de volgende events worden vastgesteld op dezelfde manier. Om een maatsoort erin te verwerken komt automatisch een kick op de één van de gekozen maatsoort. 
 Je kunt zoveel geluiden als je wilt in het programma zetten. Ze horen thuis in het mapje sounds. De naam conventie is: 0.wav 1.wav 2.wav enz... Onder 1.wav wordt een kick verwacht, onder 0.wav is het logisch stilte onder te brengen. 
 
+flow:
+
+user input
+|
+v
+genereer kanswaardes
+|
+v
+voer Markov chain uit
+|
+v
+Speel sequence
+
+
 
 De verwachte voordelen van dit algoritme zijn: 
 * Er ontstaan herkenbare patronen
