@@ -1,5 +1,7 @@
 import pygame #to test if requested audio is available
 
+
+#This code tests if passed in information is the information it is supposed to be. If not, an error message is showed and the user can try again.
 def inputValidation(question, inputType, range=[]):
     initInput = input(question)
     if inputType == "integer":
